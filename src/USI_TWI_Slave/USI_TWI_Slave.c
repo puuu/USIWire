@@ -154,6 +154,7 @@ ISR(USI_OVERFLOW_VECTOR)
 __interrupt void USI_Counter_Overflow_ISR(void)
 #endif
 {
+	unsigned char tmpRxHead;
 	unsigned char tmpTxTail; // Temporary variables to store volatiles
 	unsigned char tmpUSIDR;
 
@@ -215,12 +216,17 @@ __interrupt void USI_Counter_Overflow_ISR(void)
 	// Copy data from USIDR and send ACK. Next USI_SLAVE_REQUEST_DATA
 	case USI_SLAVE_GET_DATA_AND_SEND_ACK:
 		// Put data into Buffer
-		tmpUSIDR              = USIDR; // Not necessary, but prevents warnings
-		TWI_RxHead            = (TWI_RxHead + 1) & TWI_RX_BUFFER_MASK;
-		TWI_RxBuf[TWI_RxHead] = tmpUSIDR;
-
 		USI_TWI_Overflow_State = USI_SLAVE_REQUEST_DATA;
-		SET_USI_TO_SEND_ACK();
+		tmpUSIDR              = USIDR; // Not necessary, but prevents warnings
+		tmpRxHead = (TWI_RxHead + 1) & TWI_RX_BUFFER_MASK;
+		if (TWI_RxTail != tmpRxHead) {
+			TWI_RxHead            = tmpRxHead;
+			TWI_RxBuf[TWI_RxHead] = tmpUSIDR;
+			SET_USI_TO_SEND_ACK();
+		} else // If the buffer is full then:
+		{
+			SET_USI_TO_SEND_NACK();
+		}
 		break;
 	}
 }
