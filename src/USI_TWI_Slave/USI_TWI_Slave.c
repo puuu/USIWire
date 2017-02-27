@@ -118,12 +118,9 @@ ISR(USI_START_VECTOR)
 __interrupt void USI_Start_Condition_ISR(void)
 #endif
 {
-	unsigned char tmpUSISR; // Temporary variable to store volatile
-	tmpUSISR = USISR;       // Not necessary, but prevents warnings
-	                        // Set default starting conditions for new TWI package
 	USI_TWI_Overflow_State = USI_SLAVE_CHECK_ADDRESS;
 	DDR_USI &= ~(1 << PORT_USI_SDA); // Set SDA as input
-	while ((PIN_USI & (1 << PORT_USI_SCL)) & !(tmpUSISR & (1 << USIPF)))
+	while ((PIN_USI & (1 << PORT_USI_SCL | 1 << PIN_USI_SDA)) == (1 << PORT_USI_SCL))
 		; // Wait for SCL to go low to ensure the "Start Condition" has completed.
 	      // If a Stop condition arises then leave the interrupt to prevent waiting forever.
 	USICR = (1 << USISIE) | (1 << USIOIE)
