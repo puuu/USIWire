@@ -118,16 +118,27 @@ ISR(USI_START_VECTOR)
 __interrupt void USI_Start_Condition_ISR(void)
 #endif
 {
+	unsigned char tmpPin; // Temporary variable for pin state
 	USI_TWI_Overflow_State = USI_SLAVE_CHECK_ADDRESS;
 	DDR_USI &= ~(1 << PORT_USI_SDA); // Set SDA as input
-	while ((PIN_USI & (1 << PORT_USI_SCL | 1 << PIN_USI_SDA)) == (1 << PORT_USI_SCL))
+	while ((tmpPin = (PIN_USI & (1 << PORT_USI_SCL | 1 << PIN_USI_SDA))) == (1 << PORT_USI_SCL))
 		; // Wait for SCL to go low to ensure the "Start Condition" has completed.
 	      // If a Stop condition arises then leave the interrupt to prevent waiting forever.
-	USICR = (1 << USISIE) | (1 << USIOIE)
-	        | // Enable Overflow and Start Condition Interrupt. (Keep StartCondInt to detect RESTART)
-	        (1 << USIWM1) | (1 << USIWM0) |                 // Set USI in Two-wire mode.
-	        (1 << USICS1) | (0 << USICS0) | (0 << USICLK) | // Shift Register Clock Source = External, positive edge
-	        (0 << USITC);
+	if (tmpPin) {
+		// Stop Condition (waiting for next Start Condition)
+		USICR = (1 << USISIE) | (0 << USIOIE) | // Enable Start Condition Interrupt. Disable Overflow Interrupt.
+		        (1 << USIWM1) | (0 << USIWM0) | // Set USI in Two-wire mode. No USI Counter overflow prior
+		                                        // to first Start Condition (potentail failure)
+		        (1 << USICS1) | (0 << USICS0) | (0 << USICLK) | // Shift Register Clock Source = External, positive edge
+		        (0 << USITC);
+	} else {
+		// really Start Condition (Enable Overflow Interrupt)
+		USICR = (1 << USISIE) | (1 << USIOIE)
+		        | // Enable Overflow and Start Condition Interrupt. (Keep StartCondInt to detect RESTART)
+		        (1 << USIWM1) | (1 << USIWM0) |                 // Set USI in Two-wire mode.
+		        (1 << USICS1) | (0 << USICS0) | (0 << USICLK) | // Shift Register Clock Source = External, positive edge
+		        (0 << USITC);
+	}
 	USISR = (1 << USI_START_COND_INT) | (1 << USIOIF) | (1 << USIPF) | (1 << USIDC) | // Clear flags
 	        (0x0 << USICNT0); // Set USI to sample 8 bits i.e. count 16 external pin toggles.
 }
