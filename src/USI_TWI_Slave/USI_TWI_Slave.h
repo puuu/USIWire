@@ -184,6 +184,14 @@ typedef unsigned char uint8_t;
 		        (0x0E << USICNT0); /* set USI counter to shift 1 bit. */                                               \
 	}
 
+#define SET_USI_TO_SEND_NACK()                                                                                          \
+	{                                                                                                                  \
+		DDR_USI &= ~(1 << PORT_USI_SDA); /* Set SDA as intput, NACK is SDA high */                                     \
+		USISR = (0 << USI_START_COND_INT) | (1 << USIOIF) | (1 << USIPF) | (1 << USIDC)                                \
+		        |                  /* Clear all flags, except Start Cond  */                                           \
+		        (0x0E << USICNT0); /* set USI counter to shift 1 bit. */                                               \
+	}
+
 #define SET_USI_TO_READ_ACK()                                                                                          \
 	{                                                                                                                  \
 		DDR_USI &= ~(1 << PORT_USI_SDA); /* Set SDA as intput */                                                       \
