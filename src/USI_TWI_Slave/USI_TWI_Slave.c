@@ -116,7 +116,7 @@ unsigned char USI_TWI_Data_In_Receive_Buffer(void)
 {
 	unsigned char tmpRxTail;          // Temporary variable to store volatile
 	tmpRxTail = TWI_RxTail;           // Not necessary, but prevents warnings
-	return (TWI_RxHead != tmpRxTail); // Return 0 (FALSE) if the receive buffer is empty.
+	return (TWI_RxHead - tmpRxTail) & TWI_RX_BUFFER_MASK; // Return 0 (FALSE) if the receive buffer is empty.
 }
 
 /*----------------------------------------------------------
