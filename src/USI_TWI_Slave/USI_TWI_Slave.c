@@ -62,6 +62,8 @@ void USI_TWI_Slave_Initialise(unsigned char TWI_ownAddress)
 
 	TWI_slaveAddress = TWI_ownAddress;
 
+	USI_TWI_On_Slave_Transmit = 0;
+
 	PORT_USI |= (1 << PORT_USI_SCL);        // Set SCL high
 	PORT_USI |= (1 << PORT_USI_SDA);        // Set SDA high
 	DDR_USI |= (1 << PORT_USI_SCL);         // Set SCL as output
@@ -163,10 +165,17 @@ __interrupt void USI_Counter_Overflow_ISR(void)
 	// Check address and send ACK (and next USI_SLAVE_SEND_DATA) if OK, else reset USI.
 	case USI_SLAVE_CHECK_ADDRESS:
 		if ((USIDR == 0) || ((USIDR >> 1) == TWI_slaveAddress)) {
-			if (USIDR & 0x01)
+			if (USIDR & 0x01) {
+				if (USI_TWI_On_Slave_Transmit) {
+					// reset tx buffer and call callback
+					tmpTxTail = TWI_TxHead;
+					TWI_TxTail = tmpTxTail;
+					USI_TWI_On_Slave_Transmit();
+				}
 				USI_TWI_Overflow_State = USI_SLAVE_SEND_DATA;
-			else
+			} else {
 				USI_TWI_Overflow_State = USI_SLAVE_REQUEST_DATA;
+			}
 			SET_USI_TO_SEND_ACK();
 		} else {
 			SET_USI_TO_TWI_START_CONDITION_MODE();
