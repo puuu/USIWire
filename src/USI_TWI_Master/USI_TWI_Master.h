@@ -49,7 +49,7 @@
 // Defines controling code generating
 //#define PARAM_VERIFICATION
 //#define NOISE_TESTING
-//#define SIGNAL_VERIFY
+#define SIGNAL_VERIFY
 
 // USI_TWI messages and flags and bit masks
 //#define SUCCESS   7
