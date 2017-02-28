@@ -72,7 +72,8 @@ typedef unsigned char uint8_t;
 #define USI_SLAVE_GET_DATA_AND_SEND_ACK (0x05)
 
 // Device dependant defines
-#if defined(__AT90tiny26__) | defined(__ATtiny26__)
+#if defined(__AT90tiny26__) | defined(__ATtiny26__) \
+    | defined(__AVR_ATtiny26__)
 #define DDR_USI DDRB
 #define PORT_USI PORTB
 #define PIN_USI PINB
@@ -91,7 +92,8 @@ typedef unsigned char uint8_t;
 #define TIMER_COMP_VECTOR TIMER0_COMP_vect
 #endif
 
-#if defined(__AT90Tiny2313__) | defined(__ATtiny2313__)
+#if defined(__AT90Tiny2313__) | defined(__ATtiny2313__) \
+    | defined(__AVR_ATtiny2313__)
 #define DDR_USI DDRB
 #define PORT_USI PORTB
 #define PIN_USI PINB
@@ -110,7 +112,8 @@ typedef unsigned char uint8_t;
 #define TIMER_COMP_VECTOR TIMER0_COMPA_vect
 #endif
 
-#if defined(__ATtiny24__) | defined(__ATtiny44__) | defined(__ATtiny84__)
+#if defined(__ATtiny24__) | defined(__ATtiny44__) | defined(__ATtiny84__) \
+    | defined(__AVR_ATtiny24__) | defined(__AVR_ATtiny44__) | defined(__AVR_ATtiny84__)
 #define DDR_USI DDRA
 #define PORT_USI PORTA
 #define PIN_USI PINA
@@ -123,7 +126,8 @@ typedef unsigned char uint8_t;
 #define USI_OVERFLOW_VECTOR USI_OVF_vect
 #endif
 
-#if defined(__ATtiny25__) | defined(__ATtiny45__) | defined(__ATtiny85__)
+#if defined(__ATtiny25__) | defined(__ATtiny45__) | defined(__ATtiny85__) \
+    | defined(__AVR_ATtiny25__) | defined(__AVR_ATtiny45__) | defined(__AVR_ATtiny85__)
 #define DDR_USI DDRB
 #define PORT_USI PORTB
 #define PIN_USI PINB
@@ -157,7 +161,10 @@ typedef unsigned char uint8_t;
 
 #if defined(__AT90Mega165__) | defined(__ATmega165__) | defined(__ATmega325__) | defined(__ATmega3250__)               \
     | defined(__ATmega645__) | defined(__ATmega6450__) | defined(__ATmega329__) | defined(__ATmega3290__)              \
-    | defined(__ATmega649__) | defined(__ATmega6490__)
+    | defined(__ATmega649__) | defined(__ATmega6490__) \
+    | defined( __AVR_ATmega165__ ) | defined( __AVR_ATmega325__ ) | defined( __AVR_ATmega3250__ ) \
+    | defined( __AVR_ATmega645__ ) | defined( __AVR_ATmega6450__ ) | defined( __AVR_ATmega329__ ) \
+    | defined( __AVR_ATmega3290__ ) | defined(__AVR_ATmega649__) | defined(__AVR_ATmega6490__)
 #define DDR_USI DDRE
 #define PORT_USI PORTE
 #define PIN_USI PINE
@@ -176,7 +183,8 @@ typedef unsigned char uint8_t;
 #define TIMER_COMP_VECTOR TIMER0_COMP_vect
 #endif
 
-#if defined(__AT90Mega169__) | defined(__ATmega169__) | defined(__AVR_ATmega169PA__)
+#if defined(__AT90Mega169__) | defined(__ATmega169__) | defined(__AVR_ATmega169PA__) \
+    | defined( __AVR_ATmega169__ )
 #define DDR_USI DDRE
 #define PORT_USI PORTE
 #define PIN_USI PINE
