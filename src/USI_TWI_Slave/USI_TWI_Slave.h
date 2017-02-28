@@ -93,7 +93,7 @@ typedef unsigned char uint8_t;
 #endif
 
 #if defined(__AT90Tiny2313__) | defined(__ATtiny2313__) \
-    | defined(__AVR_ATtiny2313__)
+    | defined(__AVR_ATtiny2313__) | defined(__AVR_ATtiny4313__)
 #define DDR_USI DDRB
 #define PORT_USI PORTB
 #define PIN_USI PINB
