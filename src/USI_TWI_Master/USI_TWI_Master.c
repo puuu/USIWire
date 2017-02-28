@@ -84,11 +84,22 @@ unsigned char USI_TWI_Get_State_Info(void)
  Success or error code is returned. Error codes are defined in
  USI_TWI_Master.h
 ---------------------------------------------------------------*/
+unsigned char USI_TWI_Start_Transceiver_With_Data(unsigned char *msg, unsigned char msgSize) {
+	return USI_TWI_Start_Transceiver_With_Data_Stop(msg, msgSize, TRUE);
+}
+
+/*---------------------------------------------------------------
+ USI Transmit and receive function.
+
+ Same as USI_TWI_Start_Transceiver_With_Data() but with an additional
+ parameter that defines if a Stop Condition should be send at the end
+ of the transmission.
+---------------------------------------------------------------*/
 #ifndef __GNUC__
 __x // AVR compiler
 #endif
     unsigned char
-    USI_TWI_Start_Transceiver_With_Data(unsigned char *msg, unsigned char msgSize)
+    USI_TWI_Start_Transceiver_With_Data_Stop(unsigned char *msg, unsigned char msgSize, unsigned char stop)
 {
 	unsigned char tempUSISR_8bit = (1 << USISIF) | (1 << USIOIF) | (1 << USIPF) | (1 << USIDC)
 	                               |                 // Prepare register value to: Clear flags, and
@@ -194,7 +205,9 @@ __x // AVR compiler
 		}
 	} while (--msgSize); // Until all data sent/received.
 
-	USI_TWI_Master_Stop(); // Send a STOP condition on the TWI bus.
+	if (stop) {
+		USI_TWI_Master_Stop(); // Send a STOP condition on the TWI bus.
+	}
 
 	/* Transmission successfully completed*/
 	return (TRUE);
