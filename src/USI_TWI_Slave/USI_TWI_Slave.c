@@ -139,6 +139,13 @@ unsigned char USI_TWI_Space_In_Transmission_Buffer(void)
 	return (TWI_TxTail - tmpTxHead) & TWI_TX_BUFFER_MASK; // Return 0 (FALSE) if the transmission buffer is full.
 }
 
+// Check if there is an active data session.
+unsigned char USI_TWI_Slave_Is_Active()
+{
+	// Active if Overflow Interrupt is enabled and no Stop Condition occurred
+	return (USICR & (1 << USIOIE)) && ((USISR & (1 << USIPF)) == 0);
+}
+
 /*----------------------------------------------------------
  Detects the USI_TWI Start Condition and intialises the USI
  for reception of the "TWI Address" packet.
