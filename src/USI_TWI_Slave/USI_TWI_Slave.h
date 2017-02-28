@@ -24,6 +24,7 @@
 //********** Prototypes **********//
 
 void          USI_TWI_Slave_Initialise(unsigned char);
+void          USI_TWI_Slave_Disable();
 void          USI_TWI_Transmit_Byte(unsigned char);
 unsigned char USI_TWI_Receive_Byte(void);
 unsigned char USI_TWI_Data_In_Receive_Buffer(void);

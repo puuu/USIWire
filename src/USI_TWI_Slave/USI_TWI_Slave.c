@@ -77,6 +77,15 @@ void USI_TWI_Slave_Initialise(unsigned char TWI_ownAddress)
 	USISR = 0xF0; // Clear all flags and reset overflow counter
 }
 
+// Disable USI for TWI Slave mode.
+void USI_TWI_Slave_Disable()
+{
+	DDR_USI &= ~(1 << PORT_USI_SCL);  // Set SCL as input
+	DDR_USI &= ~(1 << PORT_USI_SDA);  // Set SDA as input
+	USICR = 0x00; // Disable USI
+	USISR = 0xF0; // Clear all flags and reset overflow counter
+}
+
 // Puts data in the transmission buffer, Waits if buffer is full.
 void USI_TWI_Transmit_Byte(unsigned char data)
 {
