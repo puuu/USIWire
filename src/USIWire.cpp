@@ -23,6 +23,7 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include "USI_TWI_Slave/USI_TWI_Slave.h"
 #include "USI_TWI_Master/USI_TWI_Master.h"
 }
 
@@ -60,10 +61,7 @@ void USIWire::begin(void) {
 }
 
 void USIWire::begin(uint8_t address) {
-  //twi_setAddress(address);
-  //twi_attachSlaveTxEvent(onRequestService);
-  //twi_attachSlaveRxEvent(onReceiveService);
-  begin();
+  USI_TWI_Slave_Initialise(address);
 }
 
 void USIWire::begin(int address) {
@@ -71,7 +69,7 @@ void USIWire::begin(int address) {
 }
 
 void USIWire::end(void) {
-  //twi_disable();
+  USI_TWI_Slave_Disable();
 }
 
 void USIWire::setClock(uint32_t clock) {
@@ -202,8 +200,13 @@ size_t USIWire::write(uint8_t data) {
     // update amount in buffer
     txBufferLength = txBufferIndex;
   } else { // in slave send mode
+    // don't bother if buffer is full
+    if (!USI_TWI_Space_In_Transmission_Buffer()) {
+      setWriteError();
+      return 0;
+    }
     // reply to master
-    //twi_transmit(&data, 1);
+    USI_TWI_Transmit_Byte(data);
   }
   return 1;
 }
@@ -223,7 +226,11 @@ size_t USIWire::write(const uint8_t *data, size_t quantity) {
 // slave rx event callback
 // or after requestFrom(address, numBytes)
 int USIWire::available(void) {
-  return rxBufferLength - rxBufferIndex;
+  if (rxBufferLength) {
+    return rxBufferLength - rxBufferIndex;
+  } else {
+    return USI_TWI_Data_In_Receive_Buffer();
+  }
 }
 
 // must be called in:
@@ -233,9 +240,13 @@ int USIWire::read(void) {
   int value = -1;
 
   // get each successive byte on each call
-  if (rxBufferIndex < rxBufferLength) {
-    value = rxBuffer[rxBufferIndex];
-    ++rxBufferIndex;
+  if (available()) {
+    if (rxBufferLength) {
+      value = rxBuffer[rxBufferIndex];
+      ++rxBufferIndex;
+    } else {
+      value = USI_TWI_Receive_Byte();
+    }
   }
 
   return value;
@@ -247,8 +258,12 @@ int USIWire::read(void) {
 int USIWire::peek(void) {
   int value = -1;
 
-  if (rxBufferIndex < rxBufferLength) {
-    value = rxBuffer[rxBufferIndex];
+  if (available()) {
+    if (rxBufferLength) {
+      value = rxBuffer[rxBufferIndex];
+    } else {
+      value = USI_TWI_Peek_Receive_Byte();
+    }
   }
 
   return value;
@@ -260,12 +275,12 @@ void USIWire::flush(void) {
 
 // sets function called on slave write
 void USIWire::onReceive( void (*function)(int) ) {
-  //user_onReceive = function;
+  USI_TWI_On_Slave_Receive = function;
 }
 
 // sets function called on slave read
 void USIWire::onRequest( void (*function)(void) ) {
-  //user_onRequest = function;
+  USI_TWI_On_Slave_Transmit = function;
 }
 
 // Preinstantiate Objects //////////////////////////////////////////////////////
