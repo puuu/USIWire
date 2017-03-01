@@ -95,6 +95,15 @@
 #define PIN_USI_SDA PINB0
 #define PIN_USI_SCL PINB2
 #endif
+#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
+#define DDR_USI DDRA
+#define PORT_USI PORTA
+#define PIN_USI PINA
+#define PORT_USI_SDA PORTA6
+#define PORT_USI_SCL PORTA4
+#define PIN_USI_SDA PINA6
+#define PIN_USI_SCL PINA4
+#endif
 #if defined(__AVR_AT90Tiny2313__) || defined(__AVR_ATtiny2313__) || defined(__AVR_ATtiny4313__)
 #define DDR_USI DDRB
 #define PORT_USI PORTB
