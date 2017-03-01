@@ -86,7 +86,8 @@
 #define PIN_USI_SCL PINE4
 #endif
 #if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) || defined(__AVR_AT90Tiny26__) \
-    || defined(__AVR_ATtiny26__)
+    || defined(__AVR_ATtiny26__) || defined( __AVR_ATtiny261__ ) || defined( __AVR_ATtiny461__ )                       \
+    || defined( __AVR_ATtiny861__ )
 #define DDR_USI DDRB
 #define PORT_USI PORTB
 #define PIN_USI PINB
