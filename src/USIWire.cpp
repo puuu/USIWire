@@ -191,7 +191,6 @@ size_t USIWire::write(uint8_t data) {
   if (transmitting) { // in master transmitter mode
     // don't bother if buffer is full
     if (txBufferLength >= BUFFER_LENGTH) {
-      setWriteError();
       return 0;
     }
     // put byte in tx buffer
@@ -202,7 +201,6 @@ size_t USIWire::write(uint8_t data) {
   } else { // in slave send mode
     // don't bother if buffer is full
     if (!USI_TWI_Space_In_Transmission_Buffer()) {
-      setWriteError();
       return 0;
     }
     // reply to master
@@ -220,6 +218,14 @@ size_t USIWire::write(const uint8_t *data, size_t quantity) {
     numBytes += write(data[i]);
   }
   return numBytes;
+}
+
+// must be called in:
+// slave tx event callback
+// or after beginTransmission(address)
+size_t USIWire::write(const char *str) {
+  if (str == NULL) return 0;
+  return write((const uint8_t *)str, strlen(str));
 }
 
 // must be called in:
