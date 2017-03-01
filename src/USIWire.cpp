@@ -1,6 +1,6 @@
 /*
-  TwoWire.cpp - TWI/I2C library for Wiring & Arduino
-  Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
+  USIWire.cpp - USI based TWI/I2C library for Arduino
+  Copyright (c) 2017 Puuu.  All right reserved.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -15,8 +15,8 @@
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- 
-  Modified 2012 by Todd Krein (todd@krein.org) to implement repeated starts
+
+  Based on TwoWire form Arduino https://github.com/arduino/Arduino.
 */
 
 extern "C" {
@@ -26,32 +26,32 @@ extern "C" {
   #include "utility/twi.h"
 }
 
-#include "Wire.h"
+#include "USIWire.h"
 
 // Initialize Class Variables //////////////////////////////////////////////////
 
-uint8_t TwoWire::rxBuffer[BUFFER_LENGTH];
-uint8_t TwoWire::rxBufferIndex = 0;
-uint8_t TwoWire::rxBufferLength = 0;
+uint8_t USIWire::rxBuffer[BUFFER_LENGTH];
+uint8_t USIWire::rxBufferIndex = 0;
+uint8_t USIWire::rxBufferLength = 0;
 
-uint8_t TwoWire::txAddress = 0;
-uint8_t TwoWire::txBuffer[BUFFER_LENGTH];
-uint8_t TwoWire::txBufferIndex = 0;
-uint8_t TwoWire::txBufferLength = 0;
+uint8_t USIWire::txAddress = 0;
+uint8_t USIWire::txBuffer[BUFFER_LENGTH];
+uint8_t USIWire::txBufferIndex = 0;
+uint8_t USIWire::txBufferLength = 0;
 
-uint8_t TwoWire::transmitting = 0;
-void (*TwoWire::user_onRequest)(void);
-void (*TwoWire::user_onReceive)(int);
+uint8_t USIWire::transmitting = 0;
+void (*USIWire::user_onRequest)(void);
+void (*USIWire::user_onReceive)(int);
 
 // Constructors ////////////////////////////////////////////////////////////////
 
-TwoWire::TwoWire()
+USIWire::USIWire()
 {
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-void TwoWire::begin(void)
+void USIWire::begin(void)
 {
   rxBufferIndex = 0;
   rxBufferLength = 0;
@@ -62,7 +62,7 @@ void TwoWire::begin(void)
   twi_init();
 }
 
-void TwoWire::begin(uint8_t address)
+void USIWire::begin(uint8_t address)
 {
   twi_setAddress(address);
   twi_attachSlaveTxEvent(onRequestService);
@@ -70,22 +70,22 @@ void TwoWire::begin(uint8_t address)
   begin();
 }
 
-void TwoWire::begin(int address)
+void USIWire::begin(int address)
 {
   begin((uint8_t)address);
 }
 
-void TwoWire::end(void)
+void USIWire::end(void)
 {
   twi_disable();
 }
 
-void TwoWire::setClock(uint32_t clock)
+void USIWire::setClock(uint32_t clock)
 {
   twi_setFrequency(clock);
 }
 
-uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint32_t iaddress, uint8_t isize, uint8_t sendStop)
+uint8_t USIWire::requestFrom(uint8_t address, uint8_t quantity, uint32_t iaddress, uint8_t isize, uint8_t sendStop)
 {
   if (isize > 0) {
   // send internal address; this mode allows sending a repeated start to access
@@ -118,26 +118,26 @@ uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint32_t iaddres
   return read;
 }
 
-uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint8_t sendStop) {
+uint8_t USIWire::requestFrom(uint8_t address, uint8_t quantity, uint8_t sendStop) {
 	return requestFrom((uint8_t)address, (uint8_t)quantity, (uint32_t)0, (uint8_t)0, (uint8_t)sendStop);
 }
 
-uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity)
+uint8_t USIWire::requestFrom(uint8_t address, uint8_t quantity)
 {
   return requestFrom((uint8_t)address, (uint8_t)quantity, (uint8_t)true);
 }
 
-uint8_t TwoWire::requestFrom(int address, int quantity)
+uint8_t USIWire::requestFrom(int address, int quantity)
 {
   return requestFrom((uint8_t)address, (uint8_t)quantity, (uint8_t)true);
 }
 
-uint8_t TwoWire::requestFrom(int address, int quantity, int sendStop)
+uint8_t USIWire::requestFrom(int address, int quantity, int sendStop)
 {
   return requestFrom((uint8_t)address, (uint8_t)quantity, (uint8_t)sendStop);
 }
 
-void TwoWire::beginTransmission(uint8_t address)
+void USIWire::beginTransmission(uint8_t address)
 {
   // indicate that we are transmitting
   transmitting = 1;
@@ -148,7 +148,7 @@ void TwoWire::beginTransmission(uint8_t address)
   txBufferLength = 0;
 }
 
-void TwoWire::beginTransmission(int address)
+void USIWire::beginTransmission(int address)
 {
   beginTransmission((uint8_t)address);
 }
@@ -166,7 +166,7 @@ void TwoWire::beginTransmission(int address)
 //	no call to endTransmission(true) is made. Some I2C
 //	devices will behave oddly if they do not see a STOP.
 //
-uint8_t TwoWire::endTransmission(uint8_t sendStop)
+uint8_t USIWire::endTransmission(uint8_t sendStop)
 {
   // transmit buffer (blocking)
   uint8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, 1, sendStop);
@@ -181,7 +181,7 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop)
 //	This provides backwards compatibility with the original
 //	definition, and expected behaviour, of endTransmission
 //
-uint8_t TwoWire::endTransmission(void)
+uint8_t USIWire::endTransmission(void)
 {
   return endTransmission(true);
 }
@@ -189,7 +189,7 @@ uint8_t TwoWire::endTransmission(void)
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-size_t TwoWire::write(uint8_t data)
+size_t USIWire::write(uint8_t data)
 {
   if(transmitting){
   // in master transmitter mode
@@ -214,7 +214,7 @@ size_t TwoWire::write(uint8_t data)
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-size_t TwoWire::write(const uint8_t *data, size_t quantity)
+size_t USIWire::write(const uint8_t *data, size_t quantity)
 {
   if(transmitting){
   // in master transmitter mode
@@ -232,7 +232,7 @@ size_t TwoWire::write(const uint8_t *data, size_t quantity)
 // must be called in:
 // slave rx event callback
 // or after requestFrom(address, numBytes)
-int TwoWire::available(void)
+int USIWire::available(void)
 {
   return rxBufferLength - rxBufferIndex;
 }
@@ -240,7 +240,7 @@ int TwoWire::available(void)
 // must be called in:
 // slave rx event callback
 // or after requestFrom(address, numBytes)
-int TwoWire::read(void)
+int USIWire::read(void)
 {
   int value = -1;
   
@@ -256,7 +256,7 @@ int TwoWire::read(void)
 // must be called in:
 // slave rx event callback
 // or after requestFrom(address, numBytes)
-int TwoWire::peek(void)
+int USIWire::peek(void)
 {
   int value = -1;
   
@@ -267,13 +267,13 @@ int TwoWire::peek(void)
   return value;
 }
 
-void TwoWire::flush(void)
+void USIWire::flush(void)
 {
   // XXX: to be implemented.
 }
 
 // behind the scenes function that is called when data is received
-void TwoWire::onReceiveService(uint8_t* inBytes, int numBytes)
+void USIWire::onReceiveService(uint8_t* inBytes, int numBytes)
 {
   // don't bother if user hasn't registered a callback
   if(!user_onReceive){
@@ -298,7 +298,7 @@ void TwoWire::onReceiveService(uint8_t* inBytes, int numBytes)
 }
 
 // behind the scenes function that is called when data is requested
-void TwoWire::onRequestService(void)
+void USIWire::onRequestService(void)
 {
   // don't bother if user hasn't registered a callback
   if(!user_onRequest){
@@ -313,18 +313,17 @@ void TwoWire::onRequestService(void)
 }
 
 // sets function called on slave write
-void TwoWire::onReceive( void (*function)(int) )
+void USIWire::onReceive( void (*function)(int) )
 {
   user_onReceive = function;
 }
 
 // sets function called on slave read
-void TwoWire::onRequest( void (*function)(void) )
+void USIWire::onRequest( void (*function)(void) )
 {
   user_onRequest = function;
 }
 
 // Preinstantiate Objects //////////////////////////////////////////////////////
 
-TwoWire Wire = TwoWire();
-
+USIWire Wire = USIWire();
