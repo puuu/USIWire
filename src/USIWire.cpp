@@ -23,7 +23,7 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include "utility/twi.h"
+#include "USI_TWI_Master/USI_TWI_Master.h"
 }
 
 #include "USIWire.h"
@@ -54,13 +54,15 @@ void USIWire::begin(void) {
   txBufferIndex = 0;
   txBufferLength = 0;
 
-  twi_init();
+  transmitting = 0;
+
+  USI_TWI_Master_Initialise();
 }
 
 void USIWire::begin(uint8_t address) {
-  twi_setAddress(address);
-  twi_attachSlaveTxEvent(onRequestService);
-  twi_attachSlaveRxEvent(onReceiveService);
+  //twi_setAddress(address);
+  //twi_attachSlaveTxEvent(onRequestService);
+  //twi_attachSlaveRxEvent(onReceiveService);
   begin();
 }
 
@@ -69,11 +71,12 @@ void USIWire::begin(int address) {
 }
 
 void USIWire::end(void) {
-  twi_disable();
+  //twi_disable();
 }
 
 void USIWire::setClock(uint32_t clock) {
-  twi_setFrequency(clock);
+  // XXX: to be implemented.
+  (void)clock; //disable warning
 }
 
 uint8_t USIWire::requestFrom(uint8_t address, uint8_t quantity,
@@ -99,17 +102,27 @@ uint8_t USIWire::requestFrom(uint8_t address, uint8_t quantity,
     endTransmission(false);
   }
 
+  // reserve one byte for slave address
+  quantity++;
   // clamp to buffer length
   if (quantity > BUFFER_LENGTH) {
     quantity = BUFFER_LENGTH;
   }
+  // set address of targeted slave and read mode
+  rxBuffer[0] = (address << TWI_ADR_BITS) | (1 << TWI_READ_BIT);
   // perform blocking read into buffer
-  uint8_t read = twi_readFrom(address, rxBuffer, quantity, sendStop);
+  uint8_t ret = USI_TWI_Start_Transceiver_With_Data_Stop(rxBuffer, quantity,
+                                                         sendStop);
   // set rx buffer iterator vars
-  rxBufferIndex = 0;
-  rxBufferLength = read;
+  rxBufferIndex = 1; // ignore slave address
+  // check for error
+  if (ret == FALSE) {
+    rxBufferLength = rxBufferIndex;
+    return 0;
+  }
+  rxBufferLength = quantity;
 
-  return read;
+  return quantity - 1; // ignore slave address
 }
 
 uint8_t USIWire::requestFrom(uint8_t address, uint8_t quantity,
@@ -133,11 +146,11 @@ uint8_t USIWire::requestFrom(int address, int quantity, int sendStop) {
 void USIWire::beginTransmission(uint8_t address) {
   // indicate that we are transmitting
   transmitting = 1;
-  // set address of targeted slave
-  txAddress = address;
+  // set address of targeted slave and write mode
+  txBuffer[0] = (address << TWI_ADR_BITS) | (0 << TWI_READ_BIT);
   // reset tx buffer iterator vars
-  txBufferIndex = 0;
-  txBufferLength = 0;
+  txBufferIndex = 1; // reserved by slave address
+  txBufferLength = txBufferIndex;
 }
 
 void USIWire::beginTransmission(int address) {
@@ -146,13 +159,27 @@ void USIWire::beginTransmission(int address) {
 
 uint8_t USIWire::endTransmission(uint8_t sendStop) {
   // transmit buffer (blocking)
-  uint8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, 1, sendStop);
+  uint8_t ret = USI_TWI_Start_Transceiver_With_Data_Stop(txBuffer,
+                                                         txBufferLength,
+                                                         sendStop);
   // reset tx buffer iterator vars
   txBufferIndex = 0;
   txBufferLength = 0;
   // indicate that we are done transmitting
   transmitting = 0;
-  return ret;
+  // check for error
+  if (ret == FALSE) {
+    switch (USI_TWI_Get_State_Info()) {
+    case USI_TWI_DATA_OUT_OF_BOUND:
+      return 1; //data too long to fit in transmit buffer
+    case USI_TWI_NO_ACK_ON_ADDRESS:
+      return 2; //received NACK on transmit of address
+    case USI_TWI_NO_ACK_ON_DATA:
+      return 3; //received NACK on transmit of data
+    }
+    return 4; //other error
+  }
+  return 0; //success
 }
 
 uint8_t USIWire::endTransmission(void) {
@@ -176,7 +203,7 @@ size_t USIWire::write(uint8_t data) {
     txBufferLength = txBufferIndex;
   } else { // in slave send mode
     // reply to master
-    twi_transmit(&data, 1);
+    //twi_transmit(&data, 1);
   }
   return 1;
 }
@@ -185,15 +212,11 @@ size_t USIWire::write(uint8_t data) {
 // slave tx event callback
 // or after beginTransmission(address)
 size_t USIWire::write(const uint8_t *data, size_t quantity) {
-  if (transmitting) { // in master transmitter mode
-    for (size_t i = 0; i < quantity; ++i) {
-      write(data[i]);
-    }
-  } else { // in slave send mode
-    // reply to master
-    twi_transmit(data, quantity);
+  size_t numBytes = 0;
+  for (size_t i = 0; i < quantity; ++i){
+    numBytes += write(data[i]);
   }
-  return quantity;
+  return numBytes;
 }
 
 // must be called in:
@@ -237,12 +260,12 @@ void USIWire::flush(void) {
 
 // sets function called on slave write
 void USIWire::onReceive( void (*function)(int) ) {
-  user_onReceive = function;
+  //user_onReceive = function;
 }
 
 // sets function called on slave read
 void USIWire::onRequest( void (*function)(void) ) {
-  user_onRequest = function;
+  //user_onRequest = function;
 }
 
 // Preinstantiate Objects //////////////////////////////////////////////////////
