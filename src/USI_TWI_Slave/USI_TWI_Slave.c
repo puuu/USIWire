@@ -111,6 +111,18 @@ unsigned char USI_TWI_Receive_Byte(void)
 	return TWI_RxBuf[tmptail];                          // Return data from the buffer.
 }
 
+// Returns a byte from the receive buffer without incrementing TWI_RxTail. Waits if buffer is empty.
+unsigned char USI_TWI_Peek_Receive_Byte(void)
+{
+	unsigned char tmptail;
+	unsigned char tmpRxTail; // Temporary variable to store volatile
+	tmpRxTail = TWI_RxTail;  // Not necessary, but prevents warnings
+	while (TWI_RxHead == tmpRxTail)
+		;
+	tmptail    = (TWI_RxTail + 1) & TWI_RX_BUFFER_MASK; // Calculate buffer index
+	return TWI_RxBuf[tmptail];                          // Return data from the buffer.
+}
+
 // Check if there is data in the receive buffer.
 unsigned char USI_TWI_Data_In_Receive_Buffer(void)
 {
