@@ -1,6 +1,6 @@
 /*
-  TwoWire.h - TWI/I2C library for Arduino & Wiring
-  Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
+  USIWire.h - USI based TWI/I2C library for Arduino
+  Copyright (c) 2017 Puuu.  All right reserved.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -16,11 +16,11 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-  Modified 2012 by Todd Krein (todd@krein.org) to implement repeated starts
+  Based on TwoWire form Arduino https://github.com/arduino/Arduino.
 */
 
-#ifndef TwoWire_h
-#define TwoWire_h
+#ifndef USIWire_h
+#define USIWire_h
 
 #include <inttypes.h>
 #include "Stream.h"
@@ -30,25 +30,19 @@
 // WIRE_HAS_END means Wire has end()
 #define WIRE_HAS_END 1
 
-class TwoWire : public Stream
-{
+class USIWire : public Stream {
   private:
     static uint8_t rxBuffer[];
     static uint8_t rxBufferIndex;
     static uint8_t rxBufferLength;
 
-    static uint8_t txAddress;
     static uint8_t txBuffer[];
     static uint8_t txBufferIndex;
     static uint8_t txBufferLength;
 
     static uint8_t transmitting;
-    static void (*user_onRequest)(void);
-    static void (*user_onReceive)(int);
-    static void onRequestService(void);
-    static void onReceiveService(uint8_t*, int);
   public:
-    TwoWire();
+    USIWire();
     void begin();
     void begin(uint8_t);
     void begin(int);
@@ -60,7 +54,7 @@ class TwoWire : public Stream
     uint8_t endTransmission(uint8_t);
     uint8_t requestFrom(uint8_t, uint8_t);
     uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
-	uint8_t requestFrom(uint8_t, uint8_t, uint32_t, uint8_t, uint8_t);
+    uint8_t requestFrom(uint8_t, uint8_t, uint32_t, uint8_t, uint8_t);
     uint8_t requestFrom(int, int);
     uint8_t requestFrom(int, int, int);
     virtual size_t write(uint8_t);
@@ -79,7 +73,6 @@ class TwoWire : public Stream
     using Print::write;
 };
 
-extern TwoWire Wire;
+extern USIWire Wire;
 
 #endif
-
