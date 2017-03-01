@@ -31,13 +31,9 @@ extern "C" {
 
 // Initialize Class Variables //////////////////////////////////////////////////
 
-uint8_t USIWire::rxBuffer[BUFFER_LENGTH];
-uint8_t USIWire::rxBufferIndex = 0;
-uint8_t USIWire::rxBufferLength = 0;
-
-uint8_t USIWire::txBuffer[BUFFER_LENGTH];
-uint8_t USIWire::txBufferIndex = 0;
-uint8_t USIWire::txBufferLength = 0;
+uint8_t USIWire::Buffer[BUFFER_LENGTH];
+uint8_t USIWire::BufferIndex = 0;
+uint8_t USIWire::BufferLength = 0;
 
 uint8_t USIWire::transmitting = 0;
 
@@ -49,11 +45,8 @@ USIWire::USIWire() {
 // Public Methods //////////////////////////////////////////////////////////////
 
 void USIWire::begin(void) {
-  rxBufferIndex = 0;
-  rxBufferLength = 0;
-
-  txBufferIndex = 0;
-  txBufferLength = 0;
+  BufferIndex = 0;
+  BufferLength = 0;
 
   transmitting = 0;
 
@@ -107,18 +100,18 @@ uint8_t USIWire::requestFrom(uint8_t address, uint8_t quantity,
     quantity = BUFFER_LENGTH;
   }
   // set address of targeted slave and read mode
-  rxBuffer[0] = (address << TWI_ADR_BITS) | (1 << TWI_READ_BIT);
+  Buffer[0] = (address << TWI_ADR_BITS) | (1 << TWI_READ_BIT);
   // perform blocking read into buffer
-  uint8_t ret = USI_TWI_Start_Transceiver_With_Data_Stop(rxBuffer, quantity,
+  uint8_t ret = USI_TWI_Start_Transceiver_With_Data_Stop(Buffer, quantity,
                                                          sendStop);
   // set rx buffer iterator vars
-  rxBufferIndex = 1; // ignore slave address
+  BufferIndex = 1; // ignore slave address
   // check for error
   if (ret == FALSE) {
-    rxBufferLength = rxBufferIndex;
+    BufferLength = BufferIndex;
     return 0;
   }
-  rxBufferLength = quantity;
+  BufferLength = quantity;
 
   return quantity - 1; // ignore slave address
 }
@@ -145,10 +138,10 @@ void USIWire::beginTransmission(uint8_t address) {
   // indicate that we are transmitting
   transmitting = 1;
   // set address of targeted slave and write mode
-  txBuffer[0] = (address << TWI_ADR_BITS) | (0 << TWI_READ_BIT);
+  Buffer[0] = (address << TWI_ADR_BITS) | (0 << TWI_READ_BIT);
   // reset tx buffer iterator vars
-  txBufferIndex = 1; // reserved by slave address
-  txBufferLength = txBufferIndex;
+  BufferIndex = 1; // reserved by slave address
+  BufferLength = BufferIndex;
 }
 
 void USIWire::beginTransmission(int address) {
@@ -157,12 +150,12 @@ void USIWire::beginTransmission(int address) {
 
 uint8_t USIWire::endTransmission(uint8_t sendStop) {
   // transmit buffer (blocking)
-  uint8_t ret = USI_TWI_Start_Transceiver_With_Data_Stop(txBuffer,
-                                                         txBufferLength,
+  uint8_t ret = USI_TWI_Start_Transceiver_With_Data_Stop(Buffer,
+                                                         BufferLength,
                                                          sendStop);
   // reset tx buffer iterator vars
-  txBufferIndex = 0;
-  txBufferLength = 0;
+  BufferIndex = 0;
+  BufferLength = 0;
   // indicate that we are done transmitting
   transmitting = 0;
   // check for error
@@ -190,14 +183,14 @@ uint8_t USIWire::endTransmission(void) {
 size_t USIWire::write(uint8_t data) {
   if (transmitting) { // in master transmitter mode
     // don't bother if buffer is full
-    if (txBufferLength >= BUFFER_LENGTH) {
+    if (BufferLength >= BUFFER_LENGTH) {
       return 0;
     }
     // put byte in tx buffer
-    txBuffer[txBufferIndex] = data;
-    ++txBufferIndex;
+    Buffer[BufferIndex] = data;
+    ++BufferIndex;
     // update amount in buffer
-    txBufferLength = txBufferIndex;
+    BufferLength = BufferIndex;
   } else { // in slave send mode
     // don't bother if buffer is full
     if (!USI_TWI_Space_In_Transmission_Buffer()) {
@@ -232,8 +225,8 @@ size_t USIWire::write(const char *str) {
 // slave rx event callback
 // or after requestFrom(address, numBytes)
 int USIWire::available(void) {
-  if (rxBufferLength) {
-    return rxBufferLength - rxBufferIndex;
+  if (BufferLength) {
+    return BufferLength - BufferIndex;
   } else {
     return USI_TWI_Data_In_Receive_Buffer();
   }
@@ -247,9 +240,9 @@ int USIWire::read(void) {
 
   // get each successive byte on each call
   if (available()) {
-    if (rxBufferLength) {
-      value = rxBuffer[rxBufferIndex];
-      ++rxBufferIndex;
+    if (BufferLength) {
+      value = Buffer[BufferIndex];
+      ++BufferIndex;
     } else {
       value = USI_TWI_Receive_Byte();
     }
@@ -265,8 +258,8 @@ int USIWire::peek(void) {
   int value = -1;
 
   if (available()) {
-    if (rxBufferLength) {
-      value = rxBuffer[rxBufferIndex];
+    if (BufferLength) {
+      value = Buffer[BufferIndex];
     } else {
       value = USI_TWI_Peek_Receive_Byte();
     }

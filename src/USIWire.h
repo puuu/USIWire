@@ -31,13 +31,9 @@
 
 class USIWire {
   private:
-    static uint8_t rxBuffer[];
-    static uint8_t rxBufferIndex;
-    static uint8_t rxBufferLength;
-
-    static uint8_t txBuffer[];
-    static uint8_t txBufferIndex;
-    static uint8_t txBufferLength;
+    static uint8_t Buffer[];
+    static uint8_t BufferIndex;
+    static uint8_t BufferLength;
 
     static uint8_t transmitting;
   public:
