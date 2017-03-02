@@ -29,6 +29,7 @@ void          USI_TWI_Transmit_Byte(unsigned char);
 unsigned char USI_TWI_Receive_Byte(void);
 unsigned char USI_TWI_Peek_Receive_Byte(void);
 unsigned char USI_TWI_Data_In_Receive_Buffer(void);
+unsigned char USI_TWI_Space_In_Transmission_Buffer(void);
 
 void (*USI_TWI_On_Slave_Transmit)(void);
 void (*USI_TWI_On_Slave_Receive)(int);

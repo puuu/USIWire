@@ -131,6 +131,14 @@ unsigned char USI_TWI_Data_In_Receive_Buffer(void)
 	return (TWI_RxHead - tmpRxTail) & TWI_RX_BUFFER_MASK; // Return 0 (FALSE) if the receive buffer is empty.
 }
 
+// Check if there is space in the transmission buffer.
+unsigned char USI_TWI_Space_In_Transmission_Buffer(void)
+{
+	unsigned char tmpTxHead;
+	tmpTxHead = (TWI_TxHead + 1) & TWI_TX_BUFFER_MASK; // Calculate next buffer index.
+	return (TWI_TxTail - tmpTxHead) & TWI_TX_BUFFER_MASK; // Return 0 (FALSE) if the transmission buffer is full.
+}
+
 /*----------------------------------------------------------
  Detects the USI_TWI Start Condition and intialises the USI
  for reception of the "TWI Address" packet.
