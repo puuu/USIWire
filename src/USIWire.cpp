@@ -282,6 +282,11 @@ void USIWire::onRequest( void (*function)(void) ) {
   USI_TWI_On_Slave_Transmit = function;
 }
 
+// return true on I2C/TWI activity
+uint8_t USIWire::isActive(void) {
+  return USI_TWI_Slave_Is_Active();
+}
+
 // Preinstantiate Objects //////////////////////////////////////////////////////
 
 USIWire Wire = USIWire();
