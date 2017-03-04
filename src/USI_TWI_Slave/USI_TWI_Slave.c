@@ -63,6 +63,7 @@ void USI_TWI_Slave_Initialise(unsigned char TWI_ownAddress)
 	TWI_slaveAddress = TWI_ownAddress;
 
 	USI_TWI_On_Slave_Transmit = 0;
+	USI_TWI_On_Slave_Receive = 0;
 
 	PORT_USI |= (1 << PORT_USI_SCL);        // Set SCL high
 	PORT_USI |= (1 << PORT_USI_SDA);        // Set SDA high
@@ -121,6 +122,17 @@ __interrupt void USI_Start_Condition_ISR(void)
 #endif
 {
 	unsigned char tmpPin; // Temporary variable for pin state
+	unsigned char tmpRxHead; // Temporary variable to store volatile
+	// call slave receive callback on repeated start
+	if (USI_TWI_On_Slave_Receive) {
+		tmpRxHead = TWI_RxHead;
+		if (TWI_RxTail != tmpRxHead) { // data in receive buffer
+			USI_TWI_On_Slave_Receive(USI_TWI_Data_In_Receive_Buffer());
+			// reset rx buffer
+			TWI_RxTail = tmpRxHead;
+		}
+	}
+
 	USI_TWI_Overflow_State = USI_SLAVE_CHECK_ADDRESS;
 	DDR_USI &= ~(1 << PORT_USI_SDA); // Set SDA as input
 	while ((tmpPin = (PIN_USI & (1 << PORT_USI_SCL | 1 << PIN_USI_SDA))) == (1 << PORT_USI_SCL))
@@ -220,6 +232,21 @@ __interrupt void USI_Counter_Overflow_ISR(void)
 	case USI_SLAVE_REQUEST_DATA:
 		USI_TWI_Overflow_State = USI_SLAVE_GET_DATA_AND_SEND_ACK;
 		SET_USI_TO_READ_DATA();
+		// call slave receive callback on stop condition
+		if (USI_TWI_On_Slave_Receive) {
+			tmpRxHead = TWI_RxHead;
+			if (TWI_RxTail != tmpRxHead) { // data in receive buffer
+				// check for stop Condition
+				while ((USISR & ((1 << USI_START_COND_INT) | (1 << USIPF) | (0xE << USICNT0))) == 0)
+					;// wait for either Start or Stop Condition
+					// cancel after one SCL cycle
+				if (USISR & (1 << USIPF)) { // Stop Condition
+					USI_TWI_On_Slave_Receive(USI_TWI_Data_In_Receive_Buffer());
+					// reset rx buffer
+					TWI_RxTail = tmpRxHead;
+				}
+			}
+		}
 		break;
 
 	// Copy data from USIDR and send ACK. Next USI_SLAVE_REQUEST_DATA
