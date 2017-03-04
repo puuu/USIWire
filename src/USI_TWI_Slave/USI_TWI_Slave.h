@@ -203,6 +203,7 @@ typedef unsigned char uint8_t;
 
 #define SET_USI_TO_TWI_START_CONDITION_MODE()                                                                          \
 	{                                                                                                                  \
+		DDR_USI &= ~(1 << PORT_USI_SDA); /* Set SDA as intput */                                                       \
 		USICR = (1 << USISIE) | (0 << USIOIE) | /* Enable Start Condition Interrupt. Disable Overflow Interrupt.*/     \
 		        (1 << USIWM1) | (0 << USIWM0) | /* Set USI in Two-wire mode. No USI Counter overflow hold.      */     \
 		        (1 << USICS1) | (0 << USICS0) | (0 << USICLK)                                                          \
