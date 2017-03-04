@@ -112,7 +112,7 @@ unsigned char USI_TWI_Data_In_Receive_Buffer(void)
  for reception of the "TWI Address" packet.
 ----------------------------------------------------------*/
 #ifdef __GNUC__
-ISR(USI_START_vect)
+ISR(USI_START_VECTOR)
 #elif __ICCAVR__
 #pragma vector = USI_START_VECTOR
 __interrupt void USI_Start_Condition_ISR(void)
@@ -140,7 +140,7 @@ __interrupt void USI_Start_Condition_ISR(void)
  for new Start Condition.
 ----------------------------------------------------------*/
 #ifdef __GNUC__
-ISR(USI_OVERFLOW_vect)
+ISR(USI_OVERFLOW_VECTOR)
 #elif __ICCAVR__
 #pragma vector = USI_OVERFLOW_VECTOR
 __interrupt void USI_Counter_Overflow_ISR(void)
