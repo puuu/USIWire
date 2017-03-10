@@ -29,17 +29,20 @@
 #endif
 #include "USI_TWI_Slave.h"
 
+//********** Buffer **********//
+uint8_t TWI_Buffer[TWI_BUFFER_SIZE];
+
 //********** Static Variables **********//
 
 static unsigned char          TWI_slaveAddress;
 static volatile unsigned char USI_TWI_Overflow_State;
 
 /*=========================> Locals <=======================================*/
-static uint8_t          TWI_RxBuf[TWI_RX_BUFFER_SIZE];
+static uint8_t *        TWI_RxBuf = TWI_Buffer;
 static volatile uint8_t TWI_RxHead;
 static volatile uint8_t TWI_RxTail;
 
-static uint8_t          TWI_TxBuf[TWI_TX_BUFFER_SIZE];
+static uint8_t *        TWI_TxBuf = TWI_Buffer + TWI_RX_BUFFER_SIZE;
 static volatile uint8_t TWI_TxHead;
 static volatile uint8_t TWI_TxTail;
 

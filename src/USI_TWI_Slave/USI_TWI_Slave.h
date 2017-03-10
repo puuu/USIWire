@@ -46,6 +46,7 @@ typedef unsigned char uint8_t;
 ///////////////// Driver Buffer Definitions //////////////////////
 //////////////////////////////////////////////////////////////////
 // 1,2,4,8,16,32,64,128 or 256 bytes are allowed buffer sizes
+extern uint8_t TWI_Buffer[];
 
 #define TWI_RX_BUFFER_SIZE (16)
 #define TWI_RX_BUFFER_MASK (TWI_RX_BUFFER_SIZE - 1)
@@ -62,6 +63,8 @@ typedef unsigned char uint8_t;
 #if (TWI_TX_BUFFER_SIZE & TWI_TX_BUFFER_MASK)
 #error TWI TX buffer size is not a power of 2
 #endif
+
+#define TWI_BUFFER_SIZE (TWI_RX_BUFFER_SIZE + TWI_TX_BUFFER_SIZE)
 //////////////////////////////////////////////////////////////////
 
 #define USI_SLAVE_CHECK_ADDRESS (0x00)
