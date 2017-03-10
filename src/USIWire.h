@@ -31,7 +31,7 @@
 
 class USIWire {
   private:
-    static uint8_t Buffer[];
+    static uint8_t *Buffer;
     static uint8_t BufferIndex;
     static uint8_t BufferLength;
 

@@ -31,7 +31,7 @@ extern "C" {
 
 // Initialize Class Variables //////////////////////////////////////////////////
 
-uint8_t USIWire::Buffer[BUFFER_LENGTH];
+uint8_t *USIWire::Buffer = TWI_Buffer;
 uint8_t USIWire::BufferIndex = 0;
 uint8_t USIWire::BufferLength = 0;
 
