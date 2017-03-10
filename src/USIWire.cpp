@@ -29,6 +29,8 @@ extern "C" {
 
 #include "USIWire.h"
 
+const uint8_t WIRE_BUFFER_LENGTH = TWI_BUFFER_SIZE - 1; //reserve slave addr
+
 // Initialize Class Variables //////////////////////////////////////////////////
 
 uint8_t *USIWire::Buffer = TWI_Buffer;
@@ -96,8 +98,8 @@ uint8_t USIWire::requestFrom(uint8_t address, uint8_t quantity,
   // reserve one byte for slave address
   quantity++;
   // clamp to buffer length
-  if (quantity > BUFFER_LENGTH) {
-    quantity = BUFFER_LENGTH;
+  if (quantity > TWI_BUFFER_SIZE) {
+    quantity = TWI_BUFFER_SIZE;
   }
   // set address of targeted slave and read mode
   Buffer[0] = (address << TWI_ADR_BITS) | (1 << TWI_READ_BIT);
@@ -183,7 +185,7 @@ uint8_t USIWire::endTransmission(void) {
 size_t USIWire::write(uint8_t data) {
   if (transmitting) { // in master transmitter mode
     // don't bother if buffer is full
-    if (BufferLength >= BUFFER_LENGTH) {
+    if (BufferLength >= TWI_BUFFER_SIZE) {
       return 0;
     }
     // put byte in tx buffer

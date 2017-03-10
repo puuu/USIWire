@@ -24,7 +24,9 @@
 
 #include <inttypes.h>
 
-#define BUFFER_LENGTH 32
+// Buffer sizes are defined in USI_TWI_Slave/USI_TWI_Slave.h
+extern const uint8_t WIRE_BUFFER_LENGTH;
+#define BUFFER_LENGTH (WIRE_BUFFER_LENGTH)
 
 // WIRE_HAS_END means Wire has end()
 #define WIRE_HAS_END 1
