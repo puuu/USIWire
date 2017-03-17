@@ -61,6 +61,9 @@ void setup() {
 #endif
 
   Wire.begin();
+#ifdef ESP8266  // default value of 230 us is too short
+  Wire.setClockStretchLimit(1500);
+#endif
   digitalWrite(LED_PIN, HIGH); // start with LED on
   runTests();
 }
