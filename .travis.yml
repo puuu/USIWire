@@ -17,6 +17,6 @@ install:
   - pip install -U platformio
 
 script:
-- platformio ci --lib="." --board=attiny24 --board=attiny44 --board=attiny84 --board=attiny25 --board=attiny45 --board=attiny85 --board=attiny2313 --board=attiny4313
+- platformio ci --lib="." --project-option="lib_ignore=Wire" --board=attiny24 --board=attiny44 --board=attiny84 --board=attiny25 --board=attiny45 --board=attiny85 --board=attiny2313 --board=attiny4313
 #--board=digispark-tiny --board=gemma --board=trinket3 --board=trinket5
 - platformio ci --board=uno --board=leonardo
