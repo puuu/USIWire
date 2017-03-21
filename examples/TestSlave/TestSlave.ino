@@ -10,8 +10,15 @@
 */
 
 // Select Wire library fitting to your platform
-//#include <Wire.h>
+#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) \
+    || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) \
+    || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) \
+    || defined(__AVR_ATtiny2313__) || defined(__AVR_ATtiny4313__)
 #include <USIWire.h>
+#else
+#include <Wire.h>
+#define PRINT Serial
+#endif
 
 // AVR sleep Modes
 #include <avr/sleep.h>
