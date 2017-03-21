@@ -16,8 +16,16 @@
  TestMaster on a ATTiny platform.
 */
 // Select Wire library fitting to your platform
+#if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) \
+    || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) \
+    || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) \
+    || defined(__AVR_ATtiny2313__) || defined(__AVR_ATtiny4313__)
+#define LED_BUILTIN 3
+#include <USIWire.h>
+#else
 #include <Wire.h>
-//#include <USIWire.h>
+#define PRINT Serial
+#endif
 
 // input pin
 const uint8_t AUX_PIN = 4;
@@ -29,8 +37,9 @@ const int SLAVE_BUFFER_SIZE = 15;
 // slave register configuration (must be same on TestSlave and TestMaster))
 #include "slave_register.h"
 
+
 // Default output to Serial
-#define PRINT Serial
+//#define PRINT Serial
 
 #ifdef PRINT
 #define print(args...) PRINT.print(args)
