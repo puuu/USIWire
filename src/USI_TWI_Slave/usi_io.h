@@ -118,4 +118,10 @@
 #  define USI_START_COND_INT USISIF
 #endif
 
+#ifndef DDR_USI_CL
+#  define DDR_USI_CL DDR_USI
+#  define PORT_USI_CL PORT_USI
+#  define PIN_USI_CL PIN_USI
+#endif
+
 #endif
