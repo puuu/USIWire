@@ -68,9 +68,9 @@ void USI_TWI_Slave_Initialise(unsigned char TWI_ownAddress)
 	USI_TWI_On_Slave_Transmit = 0;
 	USI_TWI_On_Slave_Receive = 0;
 
-	PORT_USI |= (1 << PORT_USI_SCL);        // Set SCL high
+	PORT_USI_CL |= (1 << PORT_USI_SCL);     // Set SCL high
 	PORT_USI |= (1 << PORT_USI_SDA);        // Set SDA high
-	DDR_USI |= (1 << PORT_USI_SCL);         // Set SCL as output
+	DDR_USI_CL |= (1 << PORT_USI_SCL);      // Set SCL as output
 	DDR_USI &= ~(1 << PORT_USI_SDA);        // Set SDA as input
 	USICR = (1 << USISIE) | (0 << USIOIE) | // Enable Start Condition Interrupt. Disable Overflow Interrupt.
 	        (1 << USIWM1) | (0 << USIWM0) | // Set USI in Two-wire mode. No USI Counter overflow prior
@@ -83,7 +83,7 @@ void USI_TWI_Slave_Initialise(unsigned char TWI_ownAddress)
 // Disable USI for TWI Slave mode.
 void USI_TWI_Slave_Disable()
 {
-	DDR_USI &= ~(1 << PORT_USI_SCL);  // Set SCL as input
+	DDR_USI_CL &= ~(1 << PORT_USI_SCL);  // Set SCL as input
 	DDR_USI &= ~(1 << PORT_USI_SDA);  // Set SDA as input
 	USICR = 0x00; // Disable USI
 	USISR = 0xF0; // Clear all flags and reset overflow counter
@@ -174,7 +174,7 @@ __interrupt void USI_Start_Condition_ISR(void)
 
 	USI_TWI_Overflow_State = USI_SLAVE_CHECK_ADDRESS;
 	DDR_USI &= ~(1 << PORT_USI_SDA); // Set SDA as input
-	while ((tmpPin = (PIN_USI & (1 << PORT_USI_SCL | 1 << PIN_USI_SDA))) == (1 << PORT_USI_SCL))
+	while ((tmpPin = (PIN_USI_CL & (1 << PORT_USI_SCL))) && ((PIN_USI & (1 << PIN_USI_SDA)) == 0))
 		; // Wait for SCL to go low to ensure the "Start Condition" has completed.
 	      // If a Stop condition arises then leave the interrupt to prevent waiting forever.
 	if (tmpPin) {
