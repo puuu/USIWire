@@ -92,6 +92,20 @@
 #  define USI_START_VECTOR USI_START_vect
 #  define USI_OVERFLOW_VECTOR USI_OVF_vect
 #endif
+#if defined(__AVR_ATtiny1634__)
+#  define DDR_USI DDRB
+#  define PORT_USI PORTB
+#  define PIN_USI PINB
+#  define DDR_USI_CL DDRC
+#  define PORT_USI_CL PORTC
+#  define PIN_USI_CL PINC
+#  define PORT_USI_SDA PORTB1
+#  define PORT_USI_SCL PORTC1
+#  define PIN_USI_SDA PINB1
+#  define PIN_USI_SCL PINC1
+#  define USI_START_VECTOR USI_START_vect
+#  define USI_OVERFLOW_VECTOR USI_OVF_vect
+#endif
 #if defined(__AVR_ATmega165__) || defined(__AVR_ATmega165P__) \
     || defined(__AVR_ATmega165PA__) \
     || defined(__AVR_ATmega169__) || defined(__AVR_ATmega169P__) \
