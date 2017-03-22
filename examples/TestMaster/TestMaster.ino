@@ -19,7 +19,10 @@
 #if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) \
     || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny25__) \
     || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__) \
-    || defined(__AVR_ATtiny2313__) || defined(__AVR_ATtiny4313__)
+    || defined(__AVR_ATtiny2313__) || defined(__AVR_ATtiny4313__) \
+    || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__) \
+    || defined( __AVR_ATtiny261__ ) || defined( __AVR_ATtiny461__ ) \
+    || defined( __AVR_ATtiny861__ )
 #define LED_BUILTIN 3
 #include <USIWire.h>
 #else
