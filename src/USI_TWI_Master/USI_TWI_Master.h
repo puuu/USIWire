@@ -107,6 +107,11 @@
 #define PIN_USI_SDA PINB5
 #define PIN_USI_SCL PINB7
 #endif
+#ifndef DDR_USI_CL
+#define DDR_USI_CL DDR_USI
+#define PORT_USI_CL PORT_USI
+#define PIN_USI_CL PIN_USI
+#endif
 #endif //__GNUC__
 
 // General defines
