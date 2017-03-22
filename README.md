@@ -31,6 +31,7 @@ This library is tested to compile against:
 - ATTiny261/ATTiny461/ATTiny861
 - ATTiny87/ATTiny167
 - ATTiny2313/ATTiny4313
+- ATTiny1634
 
 ATTiny support for Arduino is provided
 by [ATTiny Core](https://github.com/SpenceKonde/ATTinyCore).
