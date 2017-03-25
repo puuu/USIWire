@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/puuu/USIWire.svg?branch=master)](https://travis-ci.org/puuu/USIWire)
+
 # USIWire
 
 [Arduino Wire](https://www.arduino.cc/en/Reference/Wire) compatible
