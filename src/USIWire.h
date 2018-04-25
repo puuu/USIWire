@@ -22,6 +22,7 @@
 #ifndef USIWire_h
 #define USIWire_h
 
+#include <stddef.h>
 #include <inttypes.h>
 
 // Buffer sizes are defined in USI_TWI_Slave/USI_TWI_Slave.h
