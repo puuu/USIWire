@@ -34,6 +34,17 @@
 #  define USI_START_VECTOR USI_START_vect
 #  define USI_OVERFLOW_VECTOR USI_OVF_vect
 #endif
+#if defined(__AVR_ATtiny84A__)
+#  define DDR_USI DDRA
+#  define PORT_USI PORTA
+#  define PIN_USI PINA
+#  define PORT_USI_SDA PORTA6
+#  define PORT_USI_SCL PORTA4
+#  define PIN_USI_SDA PINA6
+#  define PIN_USI_SCL PINA4
+#  define USI_START_VECTOR USI_STR_vect
+#  define USI_OVERFLOW_VECTOR USI_OVF_vect
+#endif
 #if defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) \
     || defined(__AVR_ATtiny85__) \
     || defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__)
