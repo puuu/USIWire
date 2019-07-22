@@ -21,6 +21,10 @@
  *
  *
  ****************************************************************************/
+
+#ifndef USI_TWI_SLAVE_H_
+#define USI_TWI_SLAVE_H_
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -139,4 +143,6 @@ extern uint8_t TWI_Buffer[];
 	
 #ifdef __cplusplus
 }
+#endif
+
 #endif
