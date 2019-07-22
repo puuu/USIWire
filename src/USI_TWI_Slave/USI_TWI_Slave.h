@@ -21,6 +21,10 @@
  *
  *
  ****************************************************************************/
+
+#ifndef USI_TWI_SLAVE_H
+#define USI_TWI_SLAVE_H
+
 //********** Prototypes **********//
 
 void          USI_TWI_Slave_Initialise(unsigned char);
@@ -131,3 +135,5 @@ extern uint8_t TWI_Buffer[];
 		        |                 /* Clear all flags, except Start Cond */                                             \
 		        (0x0 << USICNT0); /* set USI to shift out 8 bits        */                                             \
 	}
+
+#endif
