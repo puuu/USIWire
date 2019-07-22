@@ -24,6 +24,10 @@
 *                     couse of the failure.
 *
 ****************************************************************************/
+
+#ifndef USI_TWI_MASTER_H
+#define USI_TWI_MASTER_H
+
 #if __GNUC__
 #ifndef F_CPU
 #define F_CPU 4000000
@@ -136,3 +140,5 @@ __x // AVR compiler
 unsigned char USI_TWI_Start_Transceiver_With_Data(unsigned char *, unsigned char);
 
 unsigned char USI_TWI_Get_State_Info(void);
+
+#endif
