@@ -24,6 +24,10 @@
 *                     couse of the failure.
 *
 ****************************************************************************/
+
+#ifndef USI_TWI_MASTER_H_
+#define USI_TWI_MASTER_H_
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -144,4 +148,6 @@ unsigned char USI_TWI_Get_State_Info(void);
   
 #ifdef __cplusplus
 }
+#endif
+
 #endif
