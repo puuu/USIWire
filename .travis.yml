@@ -8,15 +8,12 @@ cache:
   directories:
     - "~/.platformio"
 
-env:
-  - PLATFORMIO_CI_SRC=examples/TestSlave
-  - PLATFORMIO_CI_SRC=examples/TestMaster/TestMaster.ino:examples/TestSlave/slave_register.h
-
 install:
   # PlatformIO
   - pip install -U platformio
 
 script:
-- platformio ci --lib="." --project-option="lib_ignore=Wire" --board=attiny24 --board=attiny44 --board=attiny84 --board=attiny25 --board=attiny45 --board=attiny85 --board=attiny2313 --board=attiny4313 --board=digispark-pro
-#--board=digispark-tiny --board=gemma --board=trinket3 --board=trinket5
-- platformio ci --board=uno --board=leonardo
+- platformio ci --lib="." --project-option="lib_ignore=Wire" --board=attiny44 --board=attiny84 --board=attiny25 --board=attiny45 --board=attiny85 --board=attiny2313 --board=digispark-pro examples/TestSlave
+- platformio ci --lib="." --project-option="lib_ignore=Wire" --board=attiny84 --board=attiny85 --board=digispark-pro examples/TestMaster/TestMaster.ino examples/TestSlave/slave_register.h
+- platformio ci --board=uno --board=leonardo examples/TestSlave
+- platformio ci --board=uno --board=leonardo examples/TestMaster/TestMaster.ino examples/TestSlave/slave_register.h
