@@ -77,7 +77,7 @@
 
 // Device dependant defines
 #if __GNUC__
-#include "usi_io.h"
+#include <common/usi_io.h>
 #else //__GNUC__
 #if defined(__AT90Mega169__) || defined(__ATmega169__) || defined(__AT90Mega165__) || defined(__ATmega165__)           \
     || defined(__ATmega325__) || defined(__ATmega3250__) || defined(__ATmega645__) || defined(__ATmega6450__)          \
