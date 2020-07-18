@@ -162,6 +162,11 @@ __interrupt void USI_Start_Condition_ISR(void)
 {
 	unsigned char tmpPin; // Temporary variable for pin state
 	unsigned char tmpRxHead; // Temporary variable to store volatile
+
+	if (USI_TWI_On_Slave_Interrupt) {
+		USI_TWI_On_Slave_Interrupt();
+	}
+
 	// call slave receive callback on repeated start
 	if (USI_TWI_On_Slave_Receive) {
 		tmpRxHead = TWI_RxHead;

@@ -62,6 +62,7 @@ class USIWire {
     int read(void);
     int peek(void);
     void flush(void);
+    void onInterrupt( void (*)(void) );
     void onReceive( void (*)(int) );
     void onRequest( void (*)(void) );
     uint8_t isActive(void);
