@@ -279,6 +279,11 @@ void USIWire::flush(void) {
   // XXX: to be implemented.
 }
 
+// sets function called on slave interrupt
+void USIWire::onInterrupt( void (*function)(void) ) {
+  USI_TWI_On_Slave_Interrupt = function;
+}
+
 // sets function called on slave write
 void USIWire::onReceive( void (*function)(int) ) {
   USI_TWI_On_Slave_Receive = function;
